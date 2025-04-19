@@ -5,7 +5,6 @@ import fitz  # pymupdf is imported as fitz
 from sentence_transformers import SentenceTransformer
 import streamlit as st
 import google.generativeai as genai
-from keys import API_KEY
 import tempfile
 
 # Initialize session state to store document processing results
@@ -74,7 +73,7 @@ Answer:"""
     
     try:
         # Configure Gemini
-        genai.configure(api_key=API_KEY)
+        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
         
         # Generate answer
         model = genai.GenerativeModel('gemini-pro')
