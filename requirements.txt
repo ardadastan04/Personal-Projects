@@ -1,7 +1,7 @@
 streamlit==1.44.1
 PyMuPDF==1.23.8
 sentence-transformers==2.5.1
-faiss-cpu==1.7.1.post3
+annoy==1.17.3
 langchain==0.3.23
 google-generativeai==0.3.2
 setuptools==65.5.1 

@@ -1,5 +1,5 @@
 # Import libraries
-import faiss
+from annoy import AnnoyIndex
 import langchain
 import fitz  # pymupdf is imported as fitz
 from sentence_transformers import SentenceTransformer
@@ -44,18 +44,20 @@ def process_pdf(uploaded_file):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings = model.encode(text_chunks)
     
-    # Create FAISS index
+    # Create Annoy index
     dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
+    index = AnnoyIndex(dimension, 'angular')
+    for i, embedding in enumerate(embeddings):
+        index.add_item(i, embedding)
+    index.build(10)  # 10 trees
     
     return text_chunks, index, model
 
 def process_question(question, index, model, text_chunks):
     # Get relevant context
-    question_embedding = model.encode([question])
-    distances, indices = index.search(question_embedding, k=5)
-    relevant_chunks = [text_chunks[i] for i in indices[0]]
+    question_embedding = model.encode([question])[0]
+    indices = index.get_nns_by_vector(question_embedding, 5)
+    relevant_chunks = [text_chunks[i] for i in indices]
     
     # Combine relevant chunks into context
     context = "\n\n".join(relevant_chunks)
