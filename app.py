@@ -4,7 +4,7 @@ import langchain
 import fitz  # pymupdf is imported as fitz
 from sentence_transformers import SentenceTransformer
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 from keys import API_KEY
 import tempfile
 
@@ -73,14 +73,12 @@ Question: {question}
 Answer:"""
     
     try:
-        # Initialize Gemini
-        client = genai.Client(api_key=API_KEY)
+        # Configure Gemini
+        genai.configure(api_key=API_KEY)
         
         # Generate answer
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-001",
-            contents=prompt
-        )
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(prompt)
         return response.text
     except Exception as e:
         return f"Error in generating answer: {str(e)}"
